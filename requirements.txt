@@ -3,3 +3,6 @@ Flask-Cors
 Flask-JWT-Extended
 python-dotenv
 google-genai
+geopy
+Werkzeug
+gunicorn
