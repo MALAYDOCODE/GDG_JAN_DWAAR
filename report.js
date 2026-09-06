@@ -1,3 +1,4 @@
+const API_URL = "https://YOUR-RENDER-URL.onrender.com";
 
 submitButton.addEventListener("click", async () => {
 
@@ -15,31 +16,40 @@ submitButton.addEventListener("click", async () => {
 
     console.log("Report data ready for backend:", reportData);
 
-    const response = await fetch(
-        "http://127.0.0.1:8000/api/analyse",
-        {
-            method: "POST",
+    try {
 
-            headers: {
-                "Content-Type": "application/json"
-            },
+        const response = await fetch(
+            `${API_URL}/api/analyse`,
+            {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify(reportData)
+            }
+        );
 
-            body: JSON.stringify(reportData)
+        if (!response.ok) {
+            throw new Error(`Analysis request failed: ${response.status}`);
         }
-    );
 
-    const result = await response.json();
+        const result = await response.json();
 
-    showAIResult(result);
+        showAIResult(result);
 
-    alert(
-        "Your report is ready to be connected with the AI backend."
-    );
+        alert("Your report has been analysed successfully.");
+
+    } catch (error) {
+
+        console.error("Analysis error:", error);
+
+        alert(
+            "Could not connect to the AI backend. Please try again."
+        );
+
+    }
 
 });
-/* =========================================
-   VOICE RECORDING
-========================================= */
 
 let recorder;
 let chunks = [];
@@ -49,15 +59,13 @@ async function startRecording() {
 
     try {
 
-        const stream =
-            await navigator.mediaDevices.getUserMedia({
-                audio: true
-            });
+        const stream = await navigator.mediaDevices.getUserMedia({
+            audio: true
+        });
 
         chunks = [];
 
-        recorder =
-            new MediaRecorder(stream);
+        recorder = new MediaRecorder(stream);
 
         recorder.ondataavailable = function(event) {
 
@@ -75,23 +83,22 @@ async function startRecording() {
 
         voiceButton.classList.add("recording");
 
-        voiceText.textContent =
-            "Stop recording";
+        voiceText.textContent = "Stop recording";
 
         recordingStatus.textContent =
             "Listening... Speak your problem";
 
     } catch (error) {
 
-        console.error(error);
+        console.error("Microphone error:", error);
 
         alert(
             "Microphone permission is required for voice reporting."
         );
 
     }
-}
 
+}
 
 function stopRecording() {
 
@@ -103,8 +110,7 @@ function stopRecording() {
 
         voiceButton.classList.remove("recording");
 
-        voiceText.textContent =
-            "Processing voice...";
+        voiceText.textContent = "Processing voice...";
 
         recordingStatus.textContent =
             "Sending audio to AI...";
@@ -113,18 +119,13 @@ function stopRecording() {
 
 }
 
-
 async function sendAudio() {
 
-    const audioBlob =
-        new Blob(chunks, {
-            type: "audio/webm"
-        });
+    const audioBlob = new Blob(chunks, {
+        type: "audio/webm"
+    });
 
-
-    const formData =
-        new FormData();
-
+    const formData = new FormData();
 
     formData.append(
         "audio",
@@ -132,48 +133,36 @@ async function sendAudio() {
         "complaint.webm"
     );
 
-
     try {
 
-        const response =
-            await fetch(
-                "http://127.0.0.1:5000/api/voice-complaint",
-                {
-                    method: "POST",
-                    body: formData
-                }
-            );
-
+        const response = await fetch(
+            `${API_URL}/api/voice-complaint`,
+            {
+                method: "POST",
+                body: formData
+            }
+        );
 
         if (!response.ok) {
 
             throw new Error(
-                "Voice API request failed"
+                `Voice API request failed: ${response.status}`
             );
 
         }
 
-
-        const result =
-            await response.json();
-
+        const result = await response.json();
 
         console.log("Voice response:", result);
 
-
         if (result.success) {
 
-            document.getElementById(
-                "problem"
-            ).value = result.text;
+            document.getElementById("problem").value =
+                result.text;
 
-
-            document.getElementById(
-                "problem"
-            ).dispatchEvent(
+            document.getElementById("problem").dispatchEvent(
                 new Event("input")
             );
-
 
             recordingStatus.textContent =
                 "Voice converted to text ✓";
@@ -186,8 +175,12 @@ async function sendAudio() {
             recordingStatus.textContent =
                 "Could not convert voice to text.";
 
-        }
+            alert(
+                result.message ||
+                "Could not convert your voice to text."
+            );
 
+        }
 
     } catch (error) {
 
@@ -195,7 +188,6 @@ async function sendAudio() {
             "Voice upload error:",
             error
         );
-
 
         recordingStatus.textContent =
             "Backend connection failed.";
@@ -208,69 +200,92 @@ async function sendAudio() {
 
 }
 
-
-/* =========================================
-   VOICE BUTTON
-========================================= */
-
 voiceButton.addEventListener(
     "click",
     () => {
 
         if (!isRecording) {
-
             startRecording();
-
         } else {
-
             stopRecording();
-
         }
 
     }
 );
+
 function getLocation() {
 
     if (!navigator.geolocation) {
-        alert("Location is not supported by this browser.");
+
+        alert(
+            "Location is not supported by this browser."
+        );
+
         return;
     }
 
-    const button = document.getElementById("location-button");
+    const button =
+        document.getElementById("location-button");
 
-    button.textContent = "Detecting location...";
+    button.textContent =
+        "Detecting location...";
+
     button.disabled = true;
 
     navigator.geolocation.getCurrentPosition(
 
         function(position) {
 
-            const latitude = position.coords.latitude;
-            const longitude = position.coords.longitude;
+            const latitude =
+                position.coords.latitude;
 
-            // Store coordinates
-            document.getElementById("latitude").value = latitude;
-            document.getElementById("longitude").value = longitude;
+            const longitude =
+                position.coords.longitude;
 
-            // SHOW coordinates in location input
+            document.getElementById("latitude").value =
+                latitude;
+
+            document.getElementById("longitude").value =
+                longitude;
+
             document.getElementById("location").value =
                 `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
 
-            button.textContent = "Location detected ✓";
+            button.textContent =
+                "Location detected ✓";
+
             button.disabled = false;
 
-            console.log("Latitude:", latitude);
-            console.log("Longitude:", longitude);
+            console.log(
+                "Latitude:",
+                latitude
+            );
+
+            console.log(
+                "Longitude:",
+                longitude
+            );
+
         },
 
         function(error) {
 
-            console.log("Location error:", error.message);
+            console.log(
+                "Location error:",
+                error.message
+            );
 
-            button.textContent = "Use my current location";
+            button.textContent =
+                "Use my current location";
+
             button.disabled = false;
 
-            alert("Unable to get your location. Please enter it manually.");
+            alert(
+                "Unable to get your location. Please enter it manually."
+            );
+
         }
+
     );
+
 }
