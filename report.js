@@ -1,4 +1,4 @@
-const API_URL = "https://YOUR-RENDER-URL.onrender.com";
+const API_URL = "https://gdg-jan-dwaar-1.onrender.com/m";
 
 submitButton.addEventListener("click", async () => {
 
