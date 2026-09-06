@@ -37,14 +37,17 @@ document.querySelectorAll(".category-btn").forEach((button) => {
         });
 
         button.classList.add("selected");
-        selectedCategory = button.dataset.category;
+
+        selectedCategory =
+            button.dataset.category || "";
     });
 });
 
 problemInput.addEventListener("input", () => {
     const length = problemInput.value.length;
 
-    characterCount.textContent = `${length} / 500`;
+    characterCount.textContent =
+        `${length} / 500`;
 });
 
 photoInput.addEventListener("change", () => {
@@ -57,48 +60,79 @@ photoInput.addEventListener("change", () => {
     }
 
     if (file.size > 5 * 1024 * 1024) {
-        alert("Please choose an image smaller than 5MB.");
+        alert(
+            "Please choose an image smaller than 5MB."
+        );
+
         photoInput.value = "";
+
         return;
     }
 
-    const image = document.createElement("img");
+    const image =
+        document.createElement("img");
 
-    image.src = URL.createObjectURL(file);
-    image.alt = "Selected image";
+    image.src =
+        URL.createObjectURL(file);
 
-    photoPreview.appendChild(image);
+    image.alt =
+        "Selected image";
+
+    photoPreview.appendChild(
+        image
+    );
 });
 
 function validateReport() {
-    const problem = problemInput.value.trim();
-    const language = languageInput.value;
+    const problem =
+        problemInput.value.trim();
+
+    const language =
+        languageInput.value;
 
     if (!problem) {
-        alert("Please describe the problem.");
+        alert(
+            "Please describe the problem."
+        );
+
         problemInput.focus();
+
         return false;
     }
 
     if (problem.length < 5) {
-        alert("Please provide a little more detail about the problem.");
+        alert(
+            "Please provide a little more detail about the problem."
+        );
+
         problemInput.focus();
+
         return false;
     }
 
     if (!language) {
-        alert("Please select a language.");
+        alert(
+            "Please select a language."
+        );
+
         return false;
     }
 
     if (!selectedCategory) {
-        alert("Please select a category.");
+        alert(
+            "Please select a category."
+        );
+
         return false;
     }
 
     if (!locationInput.value.trim()) {
-        alert("Please enter or detect the location.");
+        alert(
+            "Please enter or detect the location."
+        );
+
         locationInput.focus();
+
         return false;
     }
 
@@ -108,7 +142,7 @@ function validateReport() {
 function showAIResult(result) {
     aiProblem.textContent =
         result.english_text ||
-        result.message ||
+        result.original_text ||
         problemInput.value.trim();
 
     aiCategory.textContent =
@@ -130,103 +164,244 @@ function showAIResult(result) {
         result.english_text ||
         problemInput.value.trim();
 
-    aiSection.classList.remove("hidden");
+    aiSection.classList.remove(
+        "hidden"
+    );
 
     aiSection.scrollIntoView({
         behavior: "smooth"
     });
 }
 
-submitButton.addEventListener("click", async () => {
-    if (!validateReport()) {
-        return;
-    }
-
-    const token = localStorage.getItem("token");
-
-    if (!token) {
-        alert("Please login before submitting a report.");
-        return;
-    }
-
-    const reportData = {
-        complaint: problemInput.value.trim(),
-        language: languageInput.value,
-        category: selectedCategory,
-        location: locationInput.value.trim()
-    };
-
-    submitButton.disabled = true;
-
-    try {
-        const response = await fetch(
-            `${API_URL}/api/complaints`,
-            {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify(reportData)
-            }
-        );
-
-        const result = await response.json();
-
-        if (!response.ok) {
-            throw new Error(
-                result.message || "Unable to submit the report."
-            );
+submitButton.addEventListener(
+    "click",
+    async () => {
+        if (!validateReport()) {
+            return;
         }
 
-        latestReport = result;
+        const token =
+            localStorage.getItem("token");
 
-        showAIResult(result);
+        if (!token) {
+            alert(
+                "Please login before submitting a report."
+            );
 
-    } catch (error) {
-        console.error("Report submission error:", error);
+            return;
+        }
 
-        alert(
-            error.message ||
-            "Could not connect to the backend."
+        const reportData = {
+            message:
+                problemInput.value.trim(),
+
+            complaint:
+                problemInput.value.trim(),
+
+            language:
+                languageInput.value,
+
+            category:
+                selectedCategory,
+
+            location:
+                locationInput.value.trim()
+        };
+
+        submitButton.disabled = true;
+
+        try {
+            const response =
+                await fetch(
+                    `${API_URL}/api/analyse`,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json",
+
+                            "Authorization":
+                                `Bearer ${token}`
+                        },
+
+                        body:
+                            JSON.stringify(
+                                reportData
+                            )
+                    }
+                );
+
+            const result =
+                await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    result.message ||
+                    "Unable to analyse the report."
+                );
+            }
+
+            latestReport =
+                result;
+
+            showAIResult(
+                result
+            );
+
+        } catch (error) {
+            console.error(
+                "Analysis error:",
+                error
+            );
+
+            alert(
+                error.message ||
+                "Could not connect to the backend."
+            );
+
+        } finally {
+            submitButton.disabled =
+                false;
+        }
+    }
+);
+
+editButton.addEventListener(
+    "click",
+    () => {
+        aiSection.classList.add(
+            "hidden"
         );
 
-    } finally {
-        submitButton.disabled = false;
+        window.scrollTo({
+            top: 0,
+            behavior: "smooth"
+        });
     }
-});
+);
 
-editButton.addEventListener("click", () => {
-    aiSection.classList.add("hidden");
+confirmButton.addEventListener(
+    "click",
+    async () => {
+        if (!latestReport) {
+            alert(
+                "Please submit the report first."
+            );
 
-    window.scrollTo({
-        top: 0,
-        behavior: "smooth"
-    });
-});
+            return;
+        }
 
-confirmButton.addEventListener("click", () => {
-    if (!latestReport) {
-        alert("Please submit the report first.");
-        return;
+        const token =
+            localStorage.getItem("token");
+
+        if (!token) {
+            alert(
+                "Please login before confirming the report."
+            );
+
+            return;
+        }
+
+        const reportData = {
+            complaint:
+                latestReport.original_text ||
+                problemInput.value.trim(),
+
+            language:
+                languageInput.value,
+
+            category:
+                latestReport.category ||
+                selectedCategory,
+
+            location:
+                latestReport.location ||
+                locationInput.value.trim()
+        };
+
+        confirmButton.disabled =
+            true;
+
+        try {
+            const response =
+                await fetch(
+                    `${API_URL}/api/complaints`,
+                    {
+                        method: "POST",
+
+                        headers: {
+                            "Content-Type":
+                                "application/json",
+
+                            "Authorization":
+                                `Bearer ${token}`
+                        },
+
+                        body:
+                            JSON.stringify(
+                                reportData
+                            )
+                    }
+                );
+
+            const result =
+                await response.json();
+
+            if (!response.ok) {
+                throw new Error(
+                    result.message ||
+                    "Unable to register complaint."
+                );
+            }
+
+            latestReport =
+                result;
+
+            requestId.textContent =
+                result.complaint_id ||
+                "Not available";
+
+            aiSection.classList.add(
+                "hidden"
+            );
+
+            successSection.classList.remove(
+                "hidden"
+            );
+
+            successSection.scrollIntoView({
+                behavior: "smooth"
+            });
+
+        } catch (error) {
+            console.error(
+                "Complaint submission error:",
+                error
+            );
+
+            alert(
+                error.message ||
+                "Could not register the complaint."
+            );
+
+        } finally {
+            confirmButton.disabled =
+                false;
+        }
     }
-
-    requestId.textContent =
-        latestReport.complaint_id ||
-        "Not available";
-
-    aiSection.classList.add("hidden");
-    successSection.classList.remove("hidden");
-
-    successSection.scrollIntoView({
-        behavior: "smooth"
-    });
-});
+);
 
 async function startRecording() {
     try {
-        if (!navigator.mediaDevices) {
-            alert("Voice recording is not supported by this browser.");
+        if (
+            !navigator.mediaDevices ||
+            !navigator.mediaDevices.getUserMedia
+        ) {
+            alert(
+                "Voice recording is not supported by this browser."
+            );
+
             return;
         }
 
@@ -237,27 +412,42 @@ async function startRecording() {
 
         chunks = [];
 
-        recorder = new MediaRecorder(stream);
+        recorder =
+            new MediaRecorder(
+                stream
+            );
 
-        recorder.ondataavailable = (event) => {
-            if (event.data.size > 0) {
-                chunks.push(event.data);
-            }
-        };
+        recorder.ondataavailable =
+            (event) => {
+                if (
+                    event.data.size > 0
+                ) {
+                    chunks.push(
+                        event.data
+                    );
+                }
+            };
 
-        recorder.onstop = async () => {
-            stream.getTracks().forEach((track) => {
-                track.stop();
-            });
+        recorder.onstop =
+            async () => {
+                stream
+                    .getTracks()
+                    .forEach(
+                        (track) => {
+                            track.stop();
+                        }
+                    );
 
-            await sendAudio();
-        };
+                await sendAudio();
+            };
 
         recorder.start();
 
         isRecording = true;
 
-        voiceButton.classList.add("recording");
+        voiceButton.classList.add(
+            "recording"
+        );
 
         voiceText.textContent =
             "Stop recording";
@@ -266,7 +456,10 @@ async function startRecording() {
             "Listening... Speak your problem";
 
     } catch (error) {
-        console.error("Microphone error:", error);
+        console.error(
+            "Microphone error:",
+            error
+        );
 
         alert(
             "Microphone permission is required for voice reporting."
@@ -283,7 +476,9 @@ function stopRecording() {
 
         isRecording = false;
 
-        voiceButton.classList.remove("recording");
+        voiceButton.classList.remove(
+            "recording"
+        );
 
         voiceText.textContent =
             "Processing voice...";
@@ -294,10 +489,15 @@ function stopRecording() {
 }
 
 async function sendAudio() {
-    const token = localStorage.getItem("token");
+    const token =
+        localStorage.getItem(
+            "token"
+        );
 
     if (!token) {
-        alert("Please login before using voice reporting.");
+        alert(
+            "Please login before using voice reporting."
+        );
 
         voiceText.textContent =
             "Speak your problem";
@@ -318,14 +518,16 @@ async function sendAudio() {
         return;
     }
 
-    const audioBlob = new Blob(
-        chunks,
-        {
-            type: "audio/webm"
-        }
-    );
+    const audioBlob =
+        new Blob(
+            chunks,
+            {
+                type: "audio/webm"
+            }
+        );
 
-    const formData = new FormData();
+    const formData =
+        new FormData();
 
     formData.append(
         "audio",
@@ -349,18 +551,23 @@ async function sendAudio() {
     );
 
     try {
-        const response = await fetch(
-            `${API_URL}/api/voice-complaint`,
-            {
-                method: "POST",
-                headers: {
-                    "Authorization": `Bearer ${token}`
-                },
-                body: formData
-            }
-        );
+        const response =
+            await fetch(
+                `${API_URL}/api/voice-complaint`,
+                {
+                    method: "POST",
 
-        const result = await response.json();
+                    headers: {
+                        "Authorization":
+                            `Bearer ${token}`
+                    },
+
+                    body: formData
+                }
+            );
+
+        const result =
+            await response.json();
 
         if (!response.ok) {
             throw new Error(
@@ -431,12 +638,15 @@ async function getLocation() {
     }
 
     const button =
-        document.getElementById("location-button");
+        document.getElementById(
+            "location-button"
+        );
 
     button.textContent =
         "Detecting location...";
 
-    button.disabled = true;
+    button.disabled =
+        true;
 
     navigator.geolocation.getCurrentPosition(
         async (position) => {
@@ -448,26 +658,36 @@ async function getLocation() {
 
             document.getElementById(
                 "latitude"
-            ).value = latitude;
+            ).value =
+                latitude;
 
             document.getElementById(
                 "longitude"
-            ).value = longitude;
+            ).value =
+                longitude;
 
             try {
-                const response = await fetch(
-                    `${API_URL}/api/location`,
-                    {
-                        method: "POST",
-                        headers: {
-                            "Content-Type": "application/json"
-                        },
-                        body: JSON.stringify({
-                            latitude,
-                            longitude
-                        })
-                    }
-                );
+                const response =
+                    await fetch(
+                        `${API_URL}/api/location`,
+                        {
+                            method: "POST",
+
+                            headers: {
+                                "Content-Type":
+                                    "application/json"
+                            },
+
+                            body:
+                                JSON.stringify({
+                                    latitude:
+                                        latitude,
+
+                                    longitude:
+                                        longitude
+                                })
+                        }
+                    );
 
                 const result =
                     await response.json();
@@ -496,10 +716,11 @@ async function getLocation() {
                     `${latitude.toFixed(6)}, ${longitude.toFixed(6)}`;
 
                 button.textContent =
-                    "Location detected ✓";
+                    "Coordinates detected ✓";
             }
 
-            button.disabled = false;
+            button.disabled =
+                false;
         },
 
         (error) => {
@@ -511,21 +732,18 @@ async function getLocation() {
             button.textContent =
                 "Use my current location";
 
-            button.disabled = false;
+            button.disabled =
+                false;
 
             alert(
-                "Unable to get your location. Please enter it manually."
+                "Unable to get your location. Please allow location access and try again."
             );
         },
 
         {
             enableHighAccuracy: true,
-            timeout: 10000,
+            timeout: 15000,
             maximumAge: 0
         }
     );
-}
-
-    );
-
 }
