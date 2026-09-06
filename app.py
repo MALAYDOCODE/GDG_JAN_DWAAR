@@ -16,9 +16,7 @@ from dotenv import load_dotenv
 from google import genai
 from geopy.geocoders import Nominatim
 
-
 load_dotenv()
-
 
 app = Flask(__name__)
 
@@ -31,48 +29,39 @@ CORS(
     }
 )
 
-
 app.config["JWT_SECRET_KEY"] = os.getenv(
     "JWT_SECRET_KEY",
-    "jandwaar-development-secret"
+    "jandwaar-hackathon-secret-key"
 )
 
 app.config["MAX_CONTENT_LENGTH"] = 20 * 1024 * 1024
 
-
 jwt = JWTManager(app)
-
 
 BASE_DIR = os.path.dirname(
     os.path.abspath(__file__)
 )
-
 
 DATABASE = os.path.join(
     BASE_DIR,
     "jandwaar.db"
 )
 
-
 UPLOAD_FOLDER = os.path.join(
     BASE_DIR,
     "uploads"
 )
-
 
 os.makedirs(
     UPLOAD_FOLDER,
     exist_ok=True
 )
 
-
 GEMINI_API_KEY = os.getenv(
     "GEMINI_API_KEY"
 )
 
-
 client = None
-
 
 if GEMINI_API_KEY:
     try:
@@ -80,9 +69,11 @@ if GEMINI_API_KEY:
             api_key=GEMINI_API_KEY
         )
     except Exception as error:
-        print("Gemini initialization error:", error)
+        print(
+            "Gemini initialization error:",
+            error
+        )
         client = None
-
 
 geolocator = Nominatim(
     user_agent="jandwaar"
@@ -90,7 +81,6 @@ geolocator = Nominatim(
 
 
 def get_db():
-
     db = sqlite3.connect(
         DATABASE
     )
@@ -101,7 +91,6 @@ def get_db():
 
 
 def create_database():
-
     db = get_db()
 
     db.execute(
@@ -147,12 +136,11 @@ def create_database():
         """
     )
 
-    faq_count = db.execute(
+    count = db.execute(
         "SELECT COUNT(*) AS count FROM faqs"
     ).fetchone()["count"]
 
-    if faq_count == 0:
-
+    if count == 0:
         faqs = [
             (
                 "How can I register a complaint?",
@@ -186,7 +174,6 @@ def create_database():
         )
 
     db.commit()
-
     db.close()
 
 
@@ -194,9 +181,7 @@ def get_location_name(
     latitude,
     longitude
 ):
-
     try:
-
         result = geolocator.reverse(
             f"{latitude}, {longitude}",
             language="en",
@@ -257,7 +242,6 @@ def get_location_name(
         return result.address
 
     except Exception as error:
-
         print(
             "Location error:",
             error
@@ -269,16 +253,14 @@ def get_location_name(
 def translate_to_english(
     text
 ):
-
     if not client:
         return text
 
     try:
-
         prompt = f"""
 Translate this citizen complaint into clear English.
 
-If the complaint is already in English, return it unchanged.
+If it is already English, return it unchanged.
 
 Do not add explanations.
 Do not summarize.
@@ -298,7 +280,6 @@ Complaint:
             return result.text.strip()
 
     except Exception as error:
-
         print(
             "Translation error:",
             error
@@ -312,8 +293,7 @@ def analyze_complaint(
     category,
     location
 ):
-
-    result_data = {
+    result = {
         "english_text": text,
         "category": category or "Other",
         "severity": "Normal",
@@ -322,14 +302,13 @@ def analyze_complaint(
     }
 
     if not client:
-        return result_data
+        return result
 
     try:
-
         prompt = f"""
 You are an AI assistant for JanDwaar.
 
-Analyze the following citizen complaint.
+Analyze this citizen complaint.
 
 Complaint:
 {text}
@@ -340,7 +319,7 @@ Selected category:
 Location:
 {location}
 
-Return the response in this exact format:
+Return exactly:
 
 CATEGORY: <category>
 SEVERITY: <Low/Medium/High/Critical>
@@ -349,59 +328,45 @@ SUMMARY: <one short sentence>
 Do not add anything else.
 """
 
-        result = client.models.generate_content(
+        response = client.models.generate_content(
             model="gemini-2.5-flash",
             contents=prompt
         )
 
         output = (
-            result.text.strip()
-            if result.text
+            response.text.strip()
+            if response.text
             else ""
         )
 
         for line in output.splitlines():
-
             line = line.strip()
 
-            if line.upper().startswith(
-                "CATEGORY:"
-            ):
-                result_data["category"] = (
-                    line.split(
-                        ":",
-                        1
-                    )[1].strip()
-                )
+            if line.upper().startswith("CATEGORY:"):
+                result["category"] = line.split(
+                    ":",
+                    1
+                )[1].strip()
 
-            elif line.upper().startswith(
-                "SEVERITY:"
-            ):
-                result_data["severity"] = (
-                    line.split(
-                        ":",
-                        1
-                    )[1].strip()
-                )
+            elif line.upper().startswith("SEVERITY:"):
+                result["severity"] = line.split(
+                    ":",
+                    1
+                )[1].strip()
 
-            elif line.upper().startswith(
-                "SUMMARY:"
-            ):
-                result_data["summary"] = (
-                    line.split(
-                        ":",
-                        1
-                    )[1].strip()
-                )
+            elif line.upper().startswith("SUMMARY:"):
+                result["summary"] = line.split(
+                    ":",
+                    1
+                )[1].strip()
 
     except Exception as error:
-
         print(
             "Analysis error:",
             error
         )
 
-    return result_data
+    return result
 
 
 create_database()
@@ -409,7 +374,6 @@ create_database()
 
 @app.route("/")
 def home():
-
     return jsonify(
         {
             "name": "JanDwaar",
@@ -429,13 +393,11 @@ def home():
     methods=["POST"]
 )
 def register():
-
     data = request.get_json(
         silent=True
     )
 
     if not data:
-
         return jsonify(
             {
                 "success": False,
@@ -472,7 +434,6 @@ def register():
     )
 
     if not name or not password:
-
         return jsonify(
             {
                 "success": False,
@@ -481,7 +442,6 @@ def register():
         ), 400
 
     if len(password) < 6:
-
         return jsonify(
             {
                 "success": False,
@@ -501,7 +461,6 @@ def register():
     db = get_db()
 
     try:
-
         db.execute(
             """
             INSERT INTO users
@@ -526,7 +485,6 @@ def register():
         db.commit()
 
     except sqlite3.IntegrityError:
-
         db.close()
 
         return jsonify(
@@ -552,13 +510,11 @@ def register():
     methods=["POST"]
 )
 def login():
-
     data = request.get_json(
         silent=True
     )
 
     if not data:
-
         return jsonify(
             {
                 "success": False,
@@ -596,7 +552,6 @@ def login():
     db.close()
 
     if not user:
-
         return jsonify(
             {
                 "success": False,
@@ -608,7 +563,6 @@ def login():
         user["password"],
         password
     ):
-
         return jsonify(
             {
                 "success": False,
@@ -638,7 +592,6 @@ def login():
 )
 @jwt_required()
 def profile():
-
     user_id = get_jwt_identity()
 
     db = get_db()
@@ -662,7 +615,6 @@ def profile():
     db.close()
 
     if not user:
-
         return jsonify(
             {
                 "success": False,
@@ -683,13 +635,11 @@ def profile():
     methods=["POST"]
 )
 def location():
-
     data = request.get_json(
         silent=True
     )
 
     if not data:
-
         return jsonify(
             {
                 "success": False,
@@ -706,7 +656,6 @@ def location():
     )
 
     try:
-
         latitude = float(
             latitude
         )
@@ -719,7 +668,6 @@ def location():
         TypeError,
         ValueError
     ):
-
         return jsonify(
             {
                 "success": False,
@@ -728,7 +676,6 @@ def location():
         ), 400
 
     if not -90 <= latitude <= 90:
-
         return jsonify(
             {
                 "success": False,
@@ -737,7 +684,6 @@ def location():
         ), 400
 
     if not -180 <= longitude <= 180:
-
         return jsonify(
             {
                 "success": False,
@@ -766,13 +712,11 @@ def location():
 )
 @jwt_required()
 def analyse():
-
     data = request.get_json(
         silent=True
     )
 
     if not data:
-
         return jsonify(
             {
                 "success": False,
@@ -790,20 +734,6 @@ def analyse():
         )
     ).strip()
 
-    category = str(
-        data.get(
-            "category",
-            ""
-        )
-    ).strip()
-
-    location = str(
-        data.get(
-            "location",
-            ""
-        )
-    ).strip()
-
     language = str(
         data.get(
             "language",
@@ -811,8 +741,21 @@ def analyse():
         )
     ).strip()
 
-    if not complaint:
+    category = str(
+        data.get(
+            "category",
+            ""
+        )
+    ).strip()
 
+    location_name = str(
+        data.get(
+            "location",
+            ""
+        )
+    ).strip()
+
+    if not complaint:
         return jsonify(
             {
                 "success": False,
@@ -827,15 +770,20 @@ def analyse():
     analysis = analyze_complaint(
         english_text,
         category,
-        location
+        location_name
     )
 
-    analysis["success"] = True
-    analysis["original_text"] = complaint
-    analysis["language"] = language
-
     return jsonify(
-        analysis
+        {
+            "success": True,
+            "original_text": complaint,
+            "english_text": english_text,
+            "language": language,
+            "category": analysis["category"],
+            "severity": analysis["severity"],
+            "summary": analysis["summary"],
+            "location": analysis["location"]
+        }
     )
 
 
@@ -845,7 +793,6 @@ def analyse():
 )
 @jwt_required()
 def create_complaint():
-
     user_id = get_jwt_identity()
 
     data = request.get_json(
@@ -853,7 +800,6 @@ def create_complaint():
     )
 
     if not data:
-
         return jsonify(
             {
                 "success": False,
@@ -871,6 +817,13 @@ def create_complaint():
         )
     ).strip()
 
+    language = str(
+        data.get(
+            "language",
+            ""
+        )
+    ).strip()
+
     category = str(
         data.get(
             "category",
@@ -885,22 +838,14 @@ def create_complaint():
         )
     ).strip()
 
-    location = str(
+    location_name = str(
         data.get(
             "location",
             ""
         )
     ).strip()
 
-    language = str(
-        data.get(
-            "language",
-            ""
-        )
-    ).strip()
-
     if not complaint:
-
         return jsonify(
             {
                 "success": False,
@@ -915,13 +860,11 @@ def create_complaint():
     analysis = analyze_complaint(
         english_text,
         category,
-        location
+        location_name
     )
 
     final_category = (
-        analysis.get(
-            "category"
-        )
+        analysis["category"]
         or category
         or "Other"
     )
@@ -956,12 +899,11 @@ def create_complaint():
             language,
             final_category,
             department,
-            location
+            location_name
         )
     )
 
     db.commit()
-
     db.close()
 
     return jsonify(
@@ -974,15 +916,9 @@ def create_complaint():
             "language": language,
             "category": final_category,
             "department": department,
-            "location": location,
-            "severity": analysis.get(
-                "severity",
-                "Normal"
-            ),
-            "summary": analysis.get(
-                "summary",
-                english_text
-            ),
+            "location": location_name,
+            "severity": analysis["severity"],
+            "summary": analysis["summary"],
             "status": "Submitted"
         }
     ), 201
@@ -994,7 +930,6 @@ def create_complaint():
 )
 @jwt_required()
 def get_complaints():
-
     user_id = get_jwt_identity()
 
     db = get_db()
@@ -1042,7 +977,6 @@ def get_complaints():
 def get_complaint(
     complaint_id
 ):
-
     user_id = get_jwt_identity()
 
     db = get_db()
@@ -1073,7 +1007,6 @@ def get_complaint(
     db.close()
 
     if not complaint:
-
         return jsonify(
             {
                 "success": False,
@@ -1096,7 +1029,6 @@ def get_complaint(
     methods=["GET"]
 )
 def get_faqs():
-
     db = get_db()
 
     faqs = db.execute(
@@ -1127,13 +1059,11 @@ def get_faqs():
     methods=["POST"]
 )
 def general_query():
-
     data = request.get_json(
         silent=True
     )
 
     if not data:
-
         return jsonify(
             {
                 "success": False,
@@ -1149,7 +1079,6 @@ def general_query():
     ).strip()
 
     if not question:
-
         return jsonify(
             {
                 "success": False,
@@ -1158,7 +1087,6 @@ def general_query():
         ), 400
 
     if not client:
-
         return jsonify(
             {
                 "success": False,
@@ -1191,7 +1119,6 @@ Citizen question:
 """
 
     try:
-
         result = client.models.generate_content(
             model="gemini-2.5-flash",
             contents=prompt
@@ -1210,7 +1137,6 @@ Citizen question:
         )
 
     except Exception as error:
-
         print(
             "Query error:",
             error
@@ -1230,9 +1156,7 @@ Citizen question:
 )
 @jwt_required()
 def voice_complaint():
-
     if not client:
-
         return jsonify(
             {
                 "success": False,
@@ -1241,7 +1165,6 @@ def voice_complaint():
         ), 500
 
     if "audio" not in request.files:
-
         return jsonify(
             {
                 "success": False,
@@ -1252,7 +1175,6 @@ def voice_complaint():
     audio = request.files["audio"]
 
     if not audio.filename:
-
         return jsonify(
             {
                 "success": False,
@@ -1283,7 +1205,6 @@ def voice_complaint():
     )
 
     try:
-
         uploaded_file = client.files.upload(
             file=filepath
         )
@@ -1314,7 +1235,6 @@ Do not add explanations.
         )
 
         if not original_text:
-
             return jsonify(
                 {
                     "success": False,
@@ -1336,7 +1256,6 @@ Do not add explanations.
         )
 
     except Exception as error:
-
         print(
             "Voice processing error:",
             error
@@ -1350,11 +1269,9 @@ Do not add explanations.
         ), 500
 
     finally:
-
         if os.path.exists(
             filepath
         ):
-
             os.remove(
                 filepath
             )
@@ -1365,7 +1282,6 @@ Do not add explanations.
     methods=["GET"]
 )
 def about():
-
     return jsonify(
         {
             "name": "JanDwaar",
@@ -1383,7 +1299,6 @@ def about():
 
 
 if __name__ == "__main__":
-
     port = int(
         os.getenv(
             "PORT",
@@ -1394,27 +1309,22 @@ if __name__ == "__main__":
     print(
         "================================"
     )
-
     print(
         "JAN DWAAR BACKEND"
     )
-
     print(
         "================================"
     )
-
     print(
         "Database:",
         DATABASE
     )
-
     print(
         "Gemini:",
         "Configured"
         if client
         else "Not configured"
     )
-
     print(
         "Server starting on port:",
         port
