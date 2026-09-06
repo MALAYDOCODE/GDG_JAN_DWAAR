@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Review Report | Jan Dwaar</title>
+
+    <link rel="stylesheet" href="confirm.css">
+</head>
+
+<body>
+
+    <!-- Background -->
+    <div class="background"></div>
+    <div class="overlay"></div>
+
+
+    <!-- =========================
+         TOP BAR
+    ========================== -->
+
+    <header class="top-bar">
+
+        <div class="brand">
+
+            <img src="logo (2).png" alt="Jan Dwaar Logo">
+
+            <div>
+                <h2>JAN DWAAR</h2>
+                <span>Community Development Platform</span>
+            </div>
+
+        </div>
+
+    </header>
+
+
+    <!-- =========================
+         SIDE NAVIGATION
+    ========================== -->
+<nav class="side-nav">
+        <a href="index.html" class="side-item">
+            <span class="side-icon">⌂</span>
+            <span class="side-label">
+     
+            </span>
+        </a>
+        <a href="dashboard.html" class="side-item">
+            <span class="side-icon">▦</span>
+            <span class="side-label">
+
+            </span>
+        </a>
+        <a href="about.html" class="side-item">
+            <span class="side-icon">i</span>
+            <span class="side-label">
+ 
+            </span>
+        </a>
+        <a href="contact.html" class="side-item">
+            <span class="side-icon">✉</span>
+            <span class="side-label">
+   
+            </span>
+        </a>
+    </nav>
+
+    <!-- =========================
+         MAIN CONTENT
+    ========================== -->
+
+    <main class="page">
+
+        <div class="page-heading">
+
+            <p class="eyebrow">
+                REVIEW YOUR REPORT
+            </p>
+
+            <h1>
+                Make sure everything<br>
+                looks right.
+            </h1>
+
+            <p class="description">
+                Review the information you provided before submitting
+                your community report.
+            </p>
+
+        </div>
+
+
+        <!-- =========================
+             REPORT CARD
+        ========================== -->
+
+        <section class="report-card">
+
+            <div class="card-header">
+
+                <div>
+                    <p class="small-title">
+                        YOUR REPORT
+                    </p>
+
+                    <h2>
+                        Problem details
+                    </h2>
+                </div>
+
+                <div class="status">
+                    Ready to submit
+                </div>
+
+            </div>
+
+
+            <!-- Problem -->
+
+            <div class="detail">
+
+                <span class="label">
+                    Problem
+                </span>
+
+                <p id="problem">
+                    —
+                </p>
+
+            </div>
+
+
+            <!-- Language + Category -->
+
+            <div class="two-column">
+
+                <div class="detail">
+
+                    <span class="label">
+                        Language
+                    </span>
+
+                    <p id="language">
+                        —
+                    </p>
+
+                </div>
+
+
+                <div class="detail">
+
+                    <span class="label">
+                        Category
+                    </span>
+
+                    <p id="category">
+                        —
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- Location -->
+
+            <div class="detail">
+
+                <span class="label">
+                    Location
+                </span>
+
+                <p id="location">
+                    —
+                </p>
+
+            </div>
+
+
+            <!-- Coordinates -->
+
+            <div class="coordinates">
+
+                <div>
+                    <span>Latitude</span>
+                    <p id="latitude">—</p>
+                </div>
+
+                <div>
+                    <span>Longitude</span>
+                    <p id="longitude">—</p>
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 AI SECTION
+            ========================== -->
+
+            <div class="ai-section">
+
+                <div class="ai-icon">
+                    ✦
+                </div>
+
+                <div>
+
+                    <h3>
+                        AI analysis will happen next
+                    </h3>
+
+                    <p>
+                        After submission, our AI will understand your
+                        report, categorise the problem and help identify
+                        its priority.
+                    </p>
+
+                </div>
+
+            </div>
+
+
+            <!-- Buttons -->
+
+            <div class="actions">
+
+                <button
+                    type="button"
+                    class="back-button"
+                    onclick="goBack()"
+                >
+                 <a href="report.html"class="abab">   ← Edit Report
+ </a>               </button>
+                <button type="button" class="submit-button" onclick="submitReport()">
+                <a href="sub.html" class="bibi">
+                    Submit Report →</a>
+                </button>
+            </div>
+        </section>
+    </main>
+    <script src="confirm.js"></script>
+</body>
+</html>

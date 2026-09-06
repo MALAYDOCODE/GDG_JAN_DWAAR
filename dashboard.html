@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Dashboard | Jan Dwaar</title>
+
+    <link rel="stylesheet" href="dashboard.css">
+</head>
+
+<body>
+
+    <!-- Background -->
+    <div class="background"></div>
+    <div class="overlay"></div>
+
+
+    <!-- =========================
+         TOP BAR
+    ========================== -->
+
+    <header class="top-bar">
+
+        <div class="brand">
+
+            <img src="logo (2).png" alt="Jan Dwaar Logo">
+
+            <div>
+                <h2>JAN DWAAR</h2>
+                <span>Community Development Platform</span>
+            </div>
+
+        </div>
+
+    </header>
+<nav class="side-nav">
+        <a href="index.html" class="side-item">
+            <span class="side-icon">⌂</span>
+            <span class="side-label">
+             Home
+            </span>
+        </a>
+        
+        <a href="about.html" class="side-item">
+            <span class="side-icon">i</span>
+            <span class="side-label">
+           About
+            </span>
+        </a>
+        <a href="contact.html" class="side-item">
+            <span class="side-icon">✉</span>
+            <span class="side-label">
+          Contact
+            </span>
+            <a href="login.html" class="side-item">
+            <span class="side-icon">↪</span>
+            <span class="side-label">
+                Login
+            </span>
+        </a>
+  
+    </nav>
+    <main class="dashboard">
+
+        <!-- Heading -->
+
+        <section class="dashboard-heading">
+
+            <div>
+
+                <p class="eyebrow">
+                    COMMUNITY OVERVIEW
+                </p>
+
+                <h1>
+                    Understand what<br>
+                    your community needs.
+                </h1>
+
+                <p class="description">
+                    View reported problems, identify priority areas
+                    and understand where development attention is
+                    needed most.
+                </p>
+
+            </div>
+
+
+            <div class="date-box">
+
+                <span>AREA</span>
+
+                <strong>Indore</strong>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             STAT CARDS
+        ========================== -->
+
+        <section class="stats">
+
+            <div class="stat-card">
+
+                <span class="stat-label">
+                    TOTAL REPORTS
+                </span>
+
+                <strong>
+                    358
+                </strong>
+
+                <p>
+                    Community requests
+                </p>
+
+            </div>
+
+
+            <div class="stat-card priority">
+
+                <span class="stat-label">
+                    HIGH PRIORITY
+                </span>
+
+                <strong>
+                    42
+                </strong>
+
+                <p>
+                    Need immediate attention
+                </p>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span class="stat-label">
+                    ACTIVE ISSUES
+                </span>
+
+                <strong>
+                    96
+                </strong>
+
+                <p>
+                    Currently being reviewed
+                </p>
+
+            </div>
+
+
+            <div class="stat-card">
+
+                <span class="stat-label">
+                    RESOLVED
+                </span>
+
+                <strong>
+                    220
+                </strong>
+
+                <p>
+                    Issues addressed
+                </p>
+
+            </div>
+
+        </section>
+
+
+        <!-- =========================
+             MAIN GRID
+        ========================== -->
+
+        <section class="dashboard-grid">
+
+
+            <!-- =========================
+                 PRIORITY ISSUES
+            ========================== -->
+
+            <div class="panel priority-panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <span class="panel-label">
+                            PRIORITY
+                        </span>
+
+                        <h2>
+                            Issues needing attention
+                        </h2>
+                    </div>
+
+                    <button onclick="viewAllIssues()">
+                        View all →
+                    </button>
+
+                </div>
+
+
+                <div class="issue-list">
+
+
+                    <!-- Issue 1 -->
+
+                    <div class="issue">
+
+                        <div class="issue-icon">
+                            W
+                        </div>
+
+                        <div class="issue-info">
+
+                            <h3>
+                                Water supply
+                            </h3>
+
+                            <p>
+                                145 reports · 8 areas
+                            </p>
+
+                        </div>
+
+                        <div class="priority-score">
+                            <span>Priority</span>
+                            <strong>92</strong>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Issue 2 -->
+
+                    <div class="issue">
+
+                        <div class="issue-icon">
+                            R
+                        </div>
+
+                        <div class="issue-info">
+
+                            <h3>
+                                Road conditions
+                            </h3>
+
+                            <p>
+                                98 reports · 6 areas
+                            </p>
+
+                        </div>
+
+                        <div class="priority-score">
+                            <span>Priority</span>
+                            <strong>81</strong>
+                        </div>
+
+                    </div>
+
+
+                    <!-- Issue 3 -->
+
+                    <div class="issue">
+
+                        <div class="issue-icon">
+                            H
+                        </div>
+
+                        <div class="issue-info">
+
+                            <h3>
+                                Healthcare access
+                            </h3>
+
+                            <p>
+                                64 reports · 4 areas
+                            </p>
+
+                        </div>
+
+                        <div class="priority-score">
+                            <span>Priority</span>
+                            <strong>74</strong>
+                        </div>
+
+                    </div>
+
+
+                </div>
+
+            </div>
+
+
+            <!-- =========================
+                 CATEGORIES
+            ========================== -->
+
+            <div class="panel category-panel">
+
+                <div class="panel-header">
+
+                    <div>
+                        <span class="panel-label">
+                            CATEGORIES
+                        </span>
+
+                        <h2>
+                            Reported problems
+                        </h2>
+                    </div>
+
+                </div>
+
+
+                <div class="category">
+
+                    <div class="category-top">
+
+                        <span>Water</span>
+                        <strong>145</strong>
+
+                    </div>
+
+                    <div class="progress">
+                        <div style="width: 90%;"></div>
+                    </div>
+
+                </div>
+
+
+                <div class="category">
+
+                    <div class="category-top">
+
+                        <span>Roads</span>
+                        <strong>98</strong>
+
+                    </div>
+
+                    <div class="progress">
+                        <div style="width: 70%;"></div>
+                    </div>
+
+                </div>
+
+
+                <div class="category">
+
+                    <div class="category-top">
+
+                        <span>Healthcare</span>
+                        <strong>64</strong>
+
+                    </div>
+
+                    <div class="progress">
+                        <div style="width: 50%;"></div>
+                    </div>
+
+                </div>
+
+
+                <div class="category">
+
+                    <div class="category-top">
+
+                        <span>Education</span>
+                        <strong>52</strong>
+
+                    </div>
+
+                    <div class="progress">
+                        <div style="width: 40%;"></div>
+                    </div>
+
+                </div>
+
+
+                <div class="category">
+
+                    <div class="category-top">
+
+                        <span>Electricity</span>
+                        <strong>43</strong>
+
+                    </div>
+
+                    <div class="progress">
+                        <div style="width: 33%;"></div>
+                    </div>
+
+                </div>
+
+            </div>
+
+
+        </section>
+
+
+        <!-- =========================
+             HOTSPOTS + AI
+        ========================== -->
+
+        <section class="bottom-grid">
+
+
+            <!-- HOTSPOTS -->
+
+            <div class="panel hotspot-panel">
+
+                <div class="panel-header">
+
+                    <div>
+
+                        <span class="panel-label">
+                            DEMAND HOTSPOTS
+                        </span>
+
+                        <h2>
+                            Areas with high demand
+                        </h2>
+
+                    </div>
+
+                    <button onclick="openMap()">
+                        Open map →
+                    </button>
+
+                </div>
+
+
+                <div class="hotspot-list">
+
+                    <div class="hotspot">
+
+                        <div>
+                            <strong>Vijay Nagar</strong>
+                            <span>Water · 48 reports</span>
+                        </div>
+
+                        <b>High</b>
+
+                    </div>
+
+
+                    <div class="hotspot">
+
+                        <div>
+                            <strong>Rau</strong>
+                            <span>Roads · 35 reports</span>
+                        </div>
+
+                        <b>High</b>
+
+                    </div>
+
+
+                    <div class="hotspot">
+
+                        <div>
+                            <strong>Bhawarkuan</strong>
+                            <span>Healthcare · 27 reports</span>
+                        </div>
+
+                        <b>Medium</b>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <!-- AI RECOMMENDATION -->
+
+            <div class="panel ai-panel">
+
+                <div class="ai-symbol">
+                    ✦
+                </div>
+
+                <span class="panel-label">
+                    AI SUPPORT
+                </span>
+
+                <h2>
+                    Recommendations
+                </h2>
+
+                <p>
+                    Once connected to the AI backend, Gemini will
+                    analyse community requests and help identify
+                    which issues should receive attention first.
+                </p>
+
+                <button onclick="openRecommendations()">
+                    View recommendations →
+                </button>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="dashboard.js"></script>
+
+</body>
+
+</html>

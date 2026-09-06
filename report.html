@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report a Problem | Jan Dwaar</title>
+    <link rel="stylesheet" href="report.css">
+</head>
+<body>
+    <div class="background"></div>
+    <div class="overlay"></div>
+    <header class="top-header">
+        <a href="index.html" class="logo-link">
+            <div class="logo-circle">
+                <img src="logo (2).png" alt="Jan Dwar Logo">
+            </div>
+            <div class="brand-name">
+                <span>JAN</span>
+                <strong>DWAAR</strong>
+            </div>
+        </a>
+    </header>
+    <nav class="side-nav">
+        <a href="index.html" class="side-item">
+            <span class="side-icon">⌂</span>
+            <span class="side-label">
+                Home
+            </span>
+        </a>
+        <a href="dashboard.html" class="side-item">
+            <span class="side-icon">▦</span>
+            <span class="side-label">
+                Dashboard
+            </span>
+        </a>
+        <a href="about.html" class="side-item">
+            <span class="side-icon">i</span>
+            <span class="side-label">
+                About
+            </span>
+        </a>
+        <a href="contact.html" class="side-item">
+            <span class="side-icon">✉</span>
+            <span class="side-label">
+                Contact
+            </span>
+        </a>
+    </nav>
+    <main class="report-page">
+        <section class="report-container">
+            <div class="intro">
+                <div class="small-label">
+                    COMMUNITY REPORT
+                </div>
+                <h1>
+                    Tell us what's<br>
+                    <span>happening.</span>
+                </h1>
+                <p>
+                    Share a problem in your community through
+                    text or voice. Your report can help identify
+                    the issues that need attention the most.
+                </p>
+            </div>
+            <div class="report-card">
+                <div class="progress-top">
+                    <div>
+                        <span class="step-number">01</span>
+                        <span>Report a problem</span>
+                    </div>
+
+                    <span class="step-info">
+                        Your voice matters
+                    </span>
+                </div>
+
+                <div class="form-group">
+                    <label for="language">
+                        Language
+                    </label>
+                    <select id="language">
+
+                        <option value="English">
+                            English
+                        </option>
+
+                        <option value="Hindi">
+                            हिन्दी (Hindi)
+                        </option>
+
+                        <option value="Marathi">
+                            मराठी (Marathi)
+                        </option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <div class="label-row">
+                        <label for="problem">
+                            Describe the problem
+                        </label>
+                        <span id="character-count">
+                            0 / 500
+                        </span>
+                    </div>
+                    <textarea
+                        id="problem"
+                        maxlength="500"
+                    ></textarea>
+                    <div class="voice-area">
+
+                        <button type="button" id="voice-button" class="voice-button">
+    <span class="mic-icon">🎙</span>
+    <span id="voice-text">
+        Speak your problem
+    </span>
+</button>
+<span id="recording-status">
+    Voice input available
+</span>
+    </div>
+       </div>
+                <div class="form-group">
+
+                    <label for="category">
+                        What is this about?
+                    </label>
+                    <div class="category-grid">
+                        <button type="button" class="category-btn" data-category="Water">
+                            Water
+                        </button>
+                        <button type="button" class="category-btn" data-category="Roads">
+                            Roads
+                        </button>
+  <button type="button" class="category-btn" data-category="Healthcare">
+                          Healthcare
+                        </button>
+                        <button type="button" class="category-btn" data-category="Education">
+                             Education
+                        </button>
+                        <button type="button" class="category-btn" data-category="Electricity">
+                            Electricity
+                        </button>
+
+
+                        <button type="button" class="category-btn" data-category="Other">
+                             Other
+                        </button>
+                    </div>
+                </div>
+<div class="form-group">
+    <label for="location">
+        Where is the problem?
+    </label>
+    <div class="location-input">
+        <span class="location-icon">◉</span>
+        <input
+            type="text"
+            id="location"
+            placeholder="Enter your area, locality or city"
+        >
+    </div>
+    <button type="button" id="location-button" class="detect-location" onclick="getLocation()">
+        Use my current location
+    </button>
+    <input type="hidden" id="latitude">
+    <input type="hidden" id="longitude">
+
+</div>
+                <div class="form-group">
+                    <label>
+                        Add a photo
+                        <span class="optional">Optional
+                        </span>
+                    </label>
+                    <label for="photo" class="photo-upload">
+                        <div class="upload-icon">
+                            ↑
+                        </div>
+                        <div>
+                            <strong>
+                                Upload an image
+                            </strong>
+                            <small>
+                                JPG, PNG up to 5MB
+                            </small>
+                        </div>
+                    </label>
+                    <input type="file" id="photo" accept="image/*" hidden>
+                    <div  id="photo-preview" class="photo-preview">
+
+                    </div>
+                </div>
+                <button type="button" id="submit-button" class="submit-button">
+                    <span><a href="confirm.html" class="bibi">Continue with report</span></a>
+                    <span class="arrow">→</span>
+                </button>
+                <p class="privacy-note">
+                    Your information will only be used
+                    to understand community needs.
+                </p>
+            </div>
+        </section>
+        <section id="ai-section" class="ai-section hidden">
+            <div class="ai-container">
+                <div class="ai-header">
+                    <div class="ai-symbol">✦</div>
+                    <div>
+                        <span class="small-label"> AI UNDERSTANDING</span>
+                        <h2>
+                            Here's what we understood.
+                        </h2>
+                    </div>
+                </div>
+
+                <p class="ai-description">
+                    Our AI has analysed your report.
+                    Please check the details before submitting.
+                </p>
+                <div class="ai-results">
+                    <div class="result-item">
+                        <span class="result-label">Problem</span>
+                        <strong id="ai-problem">—</strong>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label"></span>Category</span>
+                        <strong id="ai-category">- </strong>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Severity</span>
+                        <strong id="ai-severity" class="severity">-</strong>
+                    </div>
+                    <div class="result-item">
+                        <span class="result-label">Location</span>
+                        <strong id="ai-location">—</strong>
+                    </div>
+                </div>
+                <div class="ai-summary">
+                    <span>AI Summary</span>
+                    <p id="ai-summary-text">—</p>
+                </div>
+                <div class="ai-actions">
+                    <button type="button" id="edit-button" class="secondary-button">← Edit report</button>
+
+
+                    <button
+                        type="button"
+                        id="confirm-button"
+                        class="confirm-button"
+                    >
+                        Confirm & Submit →
+                    </button>
+
+                </div>
+
+            </div>
+
+        </section>
+
+
+
+        <!-- =========================
+             SUCCESS SECTION
+        ========================== -->
+
+        <section
+            id="success-section"
+            class="success-section hidden"
+        >
+
+            <div class="success-card">
+
+                <div class="success-icon">
+                    ✓
+                </div>
+
+                <span class="small-label">
+                    REPORT SUBMITTED
+                </span>
+
+                <h2>
+                    Thank you for speaking up.
+                </h2>
+
+                <p>
+                    Your report has been added to the
+                    community data. It will help us understand
+                    which issues need attention.
+                </p>
+
+
+                <div class="request-id">
+
+                    <span>
+                        Request ID
+                    </span>
+
+                    <strong id="request-id">
+                        JD-000000
+                    </strong>
+
+                </div>
+
+
+                <a
+                    href="dashboard.html"
+                    class="dashboard-button"
+                >
+                    View Community Dashboard →
+                </a>
+
+
+                <a
+                    href="report.html"
+                    class="new-report"
+                >
+                    Report another problem
+                </a>
+
+            </div>
+
+        </section>
+
+    </main>
+
+
+    <script src="report.js"></script>
+
+</body>
+</html>
